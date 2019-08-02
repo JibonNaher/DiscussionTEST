@@ -181,7 +181,7 @@ function fireReplySubmit(callerObject) {
 
 function fireComment(callerObject) {
   
-  var commentText = makeComment(); 
+  var commentText = makeComment();
 
 }
 
@@ -197,13 +197,20 @@ function unhideSecondaryInteractions() {
 
 function makeComment() {
   var commentTextArea = document.getElementById("comment-textarea");
-  var commentText = commentTextArea.value.trim(); 
+  var commentText = commentTextArea.value.trim();
   
   // Check if the comment is legal. 
   if (isIllegalString(commentText)) {
     return;
   }
+
+  firebase.database().ref(`/comments/`).push({
+      commentText
+  });
   
+  cmn += 1;
+  avgi = avgscore;
+
   var commentHTML = `
   <div id="commentComNum" class="comment-box user-comment"> 
     <div class="comment-username user-username">User UserNum   <a>(Just now)</a></div>

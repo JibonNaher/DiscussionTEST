@@ -11,6 +11,29 @@
   <title>Discussion Page Test</title>
 </head>
 <body>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/6.3.4/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+      https://firebase.google.com/docs/web/setup#config-web-app -->
+
+      <script src="https://www.gstatic.com/firebasejs/5.10.1/firebase-auth.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/5.10.1/firebase-database.js"></script>
+      
+  <script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+      apiKey: "AIzaSyCvn4iUm8Bq2GY0twaT0deGwZJrekJfOyA",
+      authDomain: "discussion-5e4ef.firebaseapp.com",
+      databaseURL: "https://discussion-5e4ef.firebaseio.com",
+      projectId: "discussion-5e4ef",
+      storageBucket: "discussion-5e4ef.appspot.com",
+      messagingSenderId: "502504758913",
+      appId: "1:502504758913:web:702d988d488a4a88"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  </script>
   
   <div id="main-content">
    <div id="topdesc">Dong-A Ilbo :</div>
@@ -117,8 +140,6 @@
       
       <div class="user-comment-spacer"></div>
     </div>
-    
-    
   </div>
   
   <div id="comment-section-break"></div>
@@ -128,7 +149,10 @@
   </div>
   
   <div class="w3-light-grey">
-    <div id="scorebar-comment" class="w3-container w3-center" style="width:25%"> </div>
+      <div id="avg" class="w3-container w3-center" style="width:64%;background-Color:#ffb74d">Overall comment average score : 64</div>
+  </div>
+  <div class="w3-light-grey">
+    <div id="scorebar-comment" class="w3-container w3-center" style="width:0%"> </div>
   </div>
   <div id="comment-area-1" class="comment-reply reply-button">
     <textarea id="comment-textarea" placeholder="Join the discussion" class="reply-textarea"></textarea>
@@ -137,6 +161,9 @@
   
   <script>
 
+    var cmn = 4;
+    var avgi=0.36;
+    var avgscore;
     var score;
     $("#comment-textarea").keyup(()=>{
         const analyzeURL = 'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=AIzaSyAXBN-B4-kxdC0wG9IJWaLNDonVIY_Ei8M';
@@ -154,12 +181,20 @@
                 score = this.response.attributeScores.TOXICITY.summaryScore.value;
                 console.log(score);
                 // $("#comment-textarea").val() ? $('#scorebar-comment').val(1-score) : $('#scorebar-comment').val(0);
+                avgscore = (avgi*cmn+score)/(cmn+1);
                 $("#comment-textarea").val() ? $('#scorebar-comment').width(((1-score)*100)+"%")&&$('#scorebar-comment').html("Civility Score : "+parseInt((1-score)*100)) : $('#scorebar-comment').width(0)&&$('#scorebar-comment').html("");
+                $("#comment-textarea").val() ? $('#avg').width(((1-avgscore)*100)+"%")&&$('#avg').html("Overall comment average score : "+parseInt((1-avgscore)*100)) : $('#avg').width(`avgi%`)&&$('#avg').html("Overall comment average score : "+ parseInt((1-avgi)*100));
                 if (1-score < 0.4) {
-                  $('#scorebar-comment').css('backgroundColor', '#ef5350'); 
+                  $('#scorebar-comment').css('backgroundColor', '#ef5350');
                   $("#comment-textarea").val() ? $('#scorebar-comment').width(((1-score)*100)+"%")&&$('#scorebar-comment').html(parseInt((1-score)*100)) : $('#scorebar-comment').width(0)&&$('#scorebar-comment').html("");
                 } else if (1-score < 0.7) $('#scorebar-comment').css('backgroundColor', '#ffb74d');
                 else $('#scorebar-comment').css('backgroundColor', '#3798d9');
+                if (1-avgscore < 0.4) {
+                  $('#avg').css('backgroundColor', '#ef5350');
+                  $("#comment-textarea").val() ? $('#avg').width(((1-avgscore)*100)+"%")&&$('#avg').html(parseInt((1-avgscore)*100)) : $('#avg').width(`avgi%`)&&$('#avg').html(parseInt((1-avgi)*100));
+                }
+                else if (1-avgscore < 0.7) $('#avg').css('backgroundColor', '#ffb74d');
+                else $('#avg').css('backgroundColor', '#3798d9');
             };
         };
       x.send(composedComment);
